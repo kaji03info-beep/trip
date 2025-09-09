@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA → Seattle 旅程スポット</title>
+  <style>
+    :root { --bg:#f7f7f8; --card:#fff; --text:#222; --muted:#666; --line:#e6e6e6; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:var(--bg);color:var(--text);}
+    header{position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+    .wrap{max-width:900px;margin:0 auto;padding:12px 16px;}
+    h1{font-size:20px;margin:0 0 8px 0}
+    .hint{font-size:11px;color:var(--muted)}
+    input[type="search"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fafafa;font-size:14px}
+    section{margin:28px 0}
+    h2{font-size:22px;margin:0 0 10px 0}
+    .region-en{font-size:13px;color:var(--muted);margin-left:6px}
+    .grid{display:grid;gap:10px}
+    @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+    .card{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    .name-ja{font-weight:600}
+    .name-en{font-size:12px;color:var(--muted)}
+    .btn{border:1px solid var(--line);padding:6px 10px;border-radius:999px;background:#fff;font-size:12px;cursor:pointer}
+    .btn:hover{background:#f3f3f3}
+    footer{font-size:12px;color:var(--muted);padding-bottom:40px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div style="display:flex;align-items:center;gap:8px">
+        <h1>LA → Seattle 旅程スポット</h1>
+        <div style="margin-left:auto;font-size:11px;color:var(--muted)">軽量・単一ページ / JP+EN</div>
+      </div>
+      <input id="search" type="search" placeholder="スポット名を検索 (例: ハリウッド / aquarium / bridge)" />
+      <div class="hint">各カードの「地図で開く」→ Google Maps 検索を新規タブで表示します。</div>
+    </div>
+  </header>
+
+  <main class="wrap" id="content"></main>
+
+  <footer class="wrap">※ 表記は簡易ガイドです。営業時間・イベント時間などは現地の最新情報をご確認ください。</footer>
+
+  <script>
+    const DATA = [
+      {regionJa:"ロサンゼルス",regionEn:"Los Angeles",groups:[
+        {nameJa:"チャイニーズシアター",nameEn:"TCL Chinese Theatre"},
+        {nameJa:"ハリウッドサイン",nameEn:"Hollywood Sign"},
+        {nameJa:"オリジナルファーマーズマーケット",nameEn:"The Original Farmers Market"},
+        {nameJa:"メルローズ",nameEn:"Melrose"},
+        {nameJa:"リトルトーキョー",nameEn:"Little Tokyo"},
+        {nameJa:"オールドパサディナ",nameEn:"Old Pasadena"},
+        {nameJa:"グラミー博物館",nameEn:"GRAMMY Museum"},
+      ]},
+      {regionJa:"マリブ",regionEn:"Malibu",groups:[
+        {nameJa:"ビーチ",nameEn:"Beaches"},
+        {nameJa:"Becker Surfboards(サーフショップ)",nameEn:"Becker Surfboards"},
+        {nameJa:"Adamson House & the Malibu Lagoon Museum(家)",nameEn:"Adamson House & Malibu Lagoon Museum"},
+        {nameJa:"The Getty Villa(美術館)",nameEn:"The Getty Villa"},
+      ]},
+      {regionJa:"サンタバーバラ",regionEn:"Santa Barbara",groups:[
+        {nameJa:"ミッション・サンタバーバラ(礼拝堂)",nameEn:"Old Mission Santa Barbara"},
+        {nameJa:"サンタバーバラ裁判所",nameEn:"Santa Barbara County Courthouse"},
+        {nameJa:"ダウンタウン",nameEn:"Downtown"},
+        {nameJa:"ファンクゾーン",nameEn:"Funk Zone"},
+      ]},
+      {regionJa:"サンルイスオビスポ",regionEn:"San Luis Obispo",groups:[
+        {nameJa:"エドナ・バレー・ヴィンヤード(ワイナリー)",nameEn:"Edna Valley Vineyard"},
+        {nameJa:"バブルガムアレイ(ガムの壁画)",nameEn:"Bubblegum Alley"},
+        {nameJa:"ファーマーズマーケット(歩行者天国)",nameEn:"Downtown SLO Farmers' Market"},
+        {nameJa:"ビショップ・ピーク(山脈)",nameEn:"Bishop Peak"},
+        {nameJa:"タップ・イット・ブルーイング・カンパニー(ビール工場)",nameEn:"Tap It Brewing Company"},
+        {nameJa:"貯水池キャニオントレイル(滝)",nameEn:"Reservoir Canyon Trail"},
+      ]},
+      {regionJa:"モロベイ",regionEn:"Morro Bay",groups:[
+        {nameJa:"モロビーチ(港)",nameEn:"Morro Bay / Morro Beach"},
+        {nameJa:"モロロック(岩)",nameEn:"Morro Rock"},
+        {nameJa:"カリフォルニア州道1号線",nameEn:"California State Route 1"},
+      ]},
+      {regionJa:"シアトル",regionEn:"Seattle",groups:[
+        {nameJa:"ケリー・パーク(高級住宅街)",nameEn:"Kerry Park"},
+        {nameJa:"Amazon go(無人コンビニ)",nameEn:"Amazon Go"},
+        {nameJa:"ポップカルチャー博物館",nameEn:"Museum of Pop Culture (MoPOP)"},
+        {nameJa:"スペースニードル(展望台)",nameEn:"Space Needle"},
+        {nameJa:"スタバ1号店",nameEn:"Original Starbucks (Pike Place)"},
+      ]},
+    ];
+
+    function render(query=""){
+      const content = document.getElementById("content");
+      content.innerHTML = "";
+      DATA.forEach(sec => {
+        const filtered = sec.groups.filter(g => {
+          const q = query.toLowerCase();
+          return !q || (g.nameJa + " " + g.nameEn).toLowerCase().includes(q);
+        });
+        if(filtered.length===0) return;
+
+        const section = document.createElement("section");
+        const h = document.createElement("h2");
+        h.innerHTML = sec.regionJa + '<span class="region-en">(' + sec.regionEn + ')</span>';
+        section.appendChild(h);
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        filtered.forEach(g => {
+          const card = document.createElement("div");
+          card.className = "card";
+
+          const left = document.createElement("div");
+          left.innerHTML = '<div class="name-ja">' + g.nameJa + '</div><div class="name-en">' + g.nameEn + '</div>';
+
+          const btn = document.createElement("button");
+          btn.className = "btn";
+          btn.textContent = "地図で開く";
+          btn.onclick = () => {
+            const q = encodeURIComponent((g.nameEn || g.nameJa) + " " + sec.regionEn);
+            window.open("https://www.google.com/maps/search/?api=1&query=" + q, "_blank");
+          };
+
+          card.appendChild(left);
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        content.appendChild(section);
+      });
+    }
+
+    window.addEventListener("load", () => {
+      const search = document.getElementById("search");
+      search.addEventListener("input", () => render(search.value));
+      render();
+    });
+  </script>
+</body>
+</html>
